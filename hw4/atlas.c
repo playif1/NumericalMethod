@@ -1,7 +1,7 @@
+#include <cblas.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "cblas.h"
 
 void printAns(int m, int k, int n, double *A, double *B, double *C) {
     int i, o, j;
@@ -50,15 +50,15 @@ int main () {
     begin = clock();
     for(o = 0; o<m; o++) 
         for(i = 0; i<k; i++) 
-            A[o*k + i] = (double)(i+1);    
+            A[o*k + i] = 1;    
 
     for(o = 0; o<k; o++) 
         for(i = 0; i<n; i++) 
-            B[o*n + i] = (double)(i+1);    
+            B[o*n + i] = 1;    
 
     for(o = 0; o<m; o++) 
         for(i = 0; i<n; i++) 
-            C[o*n + i] = 0.0;    
+            C[o*n + i] = 0;    
 
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
