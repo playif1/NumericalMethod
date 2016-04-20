@@ -1,6 +1,6 @@
-#include <cblas.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cblas.h>
 #include <time.h>
 
 void printAns(int m, int k, int n, double *A, double *B, double *C) {
@@ -46,6 +46,9 @@ int main () {
     clock_t begin, end;
     double time_spent;
 
+    struct timespec start, finish;
+    double elapsed;
+
     /* Initialize the three matrix */
     begin = clock();
     for(o = 0; o<m; o++) 
@@ -62,20 +65,28 @@ int main () {
 
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("The time spent in matrix initialization is %g secends\n", time_spent);
+    printf("The CPU time spent in matrix initialization is %g seconds\n", time_spent);
 
     /* Compute C = A B */
     begin = clock();
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
     cblas_dgemm (CblasRowMajor, 
                  CblasNoTrans, CblasNoTrans, m, n, k,
                  1.0, A, k, B, n, 0.0, C, n);
     
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("The time spent in matrix multiplication is %g secends\n", time_spent);
+    printf("The CPU time spent in matrix multiplication is %g seconds\n", time_spent);
+
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    printf("The wall-clock execution time spent in matrix multiplication is %g seconds\n", elapsed);
 
     /*print the answer if needed*/
-    printAns(m, k, n, A, B, C);
+    //printAns(m, k, n, A, B, C);
     free(A);
     free(B);
     free(C);

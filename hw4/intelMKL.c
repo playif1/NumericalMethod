@@ -45,6 +45,8 @@ int main()
     clock_t begin, end;
     double time_spent;
 
+    struct timespec start, finish;
+    double elapsed;
 
     /*"\n This example computes real matrix C=alpha*A*B+beta*C using \n"
             " Intel(R) MKL function dgemm, where A, B, and  C are matrices and \n"
@@ -83,19 +85,28 @@ int main()
     }
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("The time spent in matrix initialization is %g secends\n", time_spent);
+    printf("The CPU time spent in matrix initialization is %g seconds\n", time_spent);
 
     /* (" Computing matrix product using Intel(R) MKL dgemm function via CBLAS interface \n\n");*/
     begin = clock();
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 
                 m, n, k, alpha, A, k, B, n, beta, C, n);
 
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("The time spent in matrix multiplication is %g secends\n", time_spent);
+    printf("The CPU time spent in matrix multiplication is %g seconds\n", time_spent);
+
+    clock_gettime(CLOCK_MONOTONIC, &finish);
+    elapsed = (finish.tv_sec - start.tv_sec);
+    elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
+    printf("The wall-clock execution time spent in matrix multiplication is %g seconds\n", elapsed);
+
     /*printf ("\n Computations completed.\n\n");*/
 
+    /*    
     printf (" Top left corner of matrix A: \n");
     for (i=0; i<min(m,6); i++) {
       for (j=0; j<min(k,6); j++) {
@@ -119,6 +130,7 @@ int main()
       }
       printf ("\n");
     }
+    */
     /* ("\n Deallocating memory \n\n");*/
     mkl_free(A);
     mkl_free(B);
