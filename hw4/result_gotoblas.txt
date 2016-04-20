@@ -1,0 +1,20 @@
+The CPU time spent in matrix initialization is 0.354642 seconds
+The CPU time spent in matrix multiplication is 74.9449 seconds
+The wall-clock execution time spent in matrix multiplication is 18.7176 seconds
+
+The CPU time spent in matrix initialization is 0.347496 seconds
+The CPU time spent in matrix multiplication is 76.1432 seconds
+The wall-clock execution time spent in matrix multiplication is 19.0331 seconds
+
+The CPU time spent in matrix initialization is 0.34492 seconds
+The CPU time spent in matrix multiplication is 76.3182 seconds
+The wall-clock execution time spent in matrix multiplication is 19.0693 seconds
+
+The CPU time spent in matrix initialization is 0.333284 seconds
+The CPU time spent in matrix multiplication is 75.9009 seconds
+The wall-clock execution time spent in matrix multiplication is 18.9676 seconds
+
+The CPU time spent in matrix initialization is 0.34894 seconds
+The CPU time spent in matrix multiplication is 74.7815 seconds
+The wall-clock execution time spent in matrix multiplication is 18.6791 seconds
+

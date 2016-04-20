@@ -83,7 +83,7 @@ int main () {
     clock_gettime(CLOCK_MONOTONIC, &finish);
     elapsed = (finish.tv_sec - start.tv_sec);
     elapsed += (finish.tv_nsec - start.tv_nsec) / 1000000000.0;
-    printf("The wall-clock execution time spent in matrix multiplication is %g seconds\n", elapsed);
+    printf("The wall-clock execution time spent in matrix multiplication is %g seconds\n\n", elapsed);
 
     /*print the answer if needed*/
     //printAns(m, k, n, A, B, C);
