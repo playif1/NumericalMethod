@@ -1,15 +1,16 @@
 #include "sparse.h"
 
-csrMat::csrMat(int c, int r) {
-    _col = c;
+csrMat::csrMat(int r, int c, double sparsity) {
     _row = r;
+    _col = c;
     srand(time(NULL));
     int ptr = 0;
     _row_ptr.push_back(ptr);
     for(int i = 0; i < r; ++i) {
         for(int j = 0; j < c; ++j) {            
             // random initialize the sparse matrix with given sparsity
-            if(rand() % 100 < 20) {
+            double val = rand() / (double)RAND_MAX;
+            if(val < 1-sparsity) {
                 ++ptr;
                 _col_ind.push_back(j);
                 _value.push_back((double) rand() / RAND_MAX);            
@@ -54,24 +55,65 @@ void csrMat::csr_mul_dense(csrMat& A, denseMat& B) {
         _row_ptr.push_back(ptr);
         for (int j = 0; j < _col; ++j) {
             double v = 0;
-            for (int k = rowPtr[i]; k < rowPtr[i+1]; ++k) {                
-                v += Avalue[k]*Bvalue[colInd[k] * B.get_row() + j];
+            for (int k = rowPtr[i]; k < rowPtr[i+1]; ++k) {        
+                v += Avalue[k] * Bvalue[colInd[k] * B.get_col() + j];              
             }
-            if (v <= 10e-9)
+            if (v < 10e-9)
                 continue;
             _col_ind.push_back(j);
             _value.push_back(v);
             ++ptr;
         }
     }
-    _row_ptr.push_back(ptr);
+   _row_ptr.push_back(ptr);
 }
 
-int main () {
+void help(char *argv[], int n, double sparsity) {
+    cout << "Usage: " << argv[0] << "[-n {matrix size}] [-s {sparsity}]" << endl;
+    cout << "\tC = A * B" << endl;
+    cout << "\tA: sparse matrix (csr format here)" << endl;
+    cout << "\tB: dense matrix" << endl;
+    cout << "\tC: sparse matrix (csr format here)" << endl;
+    cout << "Arguments: " << endl;
+    cout << "\t-n: the matrix size of these three matrix, default value = " << n << endl;
+    cout << "\t-s: the sparsity (the ratio of zero elements) of A, default value = " << sparsity << endl;
+}
+
+int main (int argc, char *argv[]) {
     int m = 8000;
     int k = 8000;
     int n = 8000;
+    double sparsity = 0.9;
 
+    for(int i = 1; i < argc; i++) {
+        char *arg = argv[i];
+        switch(arg[0]) {
+            case '-':
+                switch(arg[1]) {
+                    case 'n':
+                        ++i;
+                        m = atoi(argv[i]);
+                        k = atoi(argv[i]);
+                        n = atoi(argv[i]);
+                        break;
+                    case 's':
+                        sparsity = atof(argv[++i]);
+                        break;
+                    default:
+                        help(argv, n, sparsity);
+                        return 0;
+                }
+                break;
+            default:
+                help(argv, n, sparsity);
+                return 0;
+        }
+    }
+   
+    if (argc <= 1)
+        cout << "using default value, matrix size = " << m << ", sparsity = " << sparsity << endl;
+    else
+        cout << endl << "using value, matrix size = " << m << ", sparsity = " << sparsity << endl;
     clock_t begin, end;
     double time_spent;
 
@@ -81,14 +123,14 @@ int main () {
     /* Initialize the three matrix */
     begin = clock();
 
-    csrMat A(m, k); 
+    csrMat A(m, k, sparsity); 
 
     end = clock();
     time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printf("The CPU time spent in matrix initialization is %g seconds\n", time_spent);
 
     denseMat B(k, n);
-    csrMat C;
+    csrMat C(m, n);
 
     /* Compute C = A B */
     begin = clock();

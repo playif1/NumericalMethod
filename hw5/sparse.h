@@ -10,15 +10,14 @@ using namespace::std;
 class denseMat {
     public:
         denseMat();
-        denseMat(int c, int r) { 
+        denseMat(int r, int c) { 
             srand(time(NULL));
-            _col = c;
             _row = r;
+            _col = c;
             _value = new double[r*c];
             for(int i = 0; i < r; ++i) {
                 for(int j = 0; j < c; ++j) {
                     _value[i*r+j] = (double) rand() / RAND_MAX;
-                    //_value[i*r+j] = 1.0+j%2;
                 }
             }
         };
@@ -49,7 +48,8 @@ class denseMat {
 class csrMat {
     public:
         csrMat() {};
-        csrMat(int, int);
+        csrMat(int r, int c) { _row = r; _col = c;};
+        csrMat(int, int, double);
 
         int get_row() {return _row;}
         int get_col() {return _col;}
