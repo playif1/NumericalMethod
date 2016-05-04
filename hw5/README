@@ -1,0 +1,13 @@
+How to compile?
+
+	make sparse:	Compile my own sparse matrix experiment code.
+	make intelmkl:	Compile the Intel-MKL matrix experiment code.
+	make all:	Compile both of them.
+	make clean:	To clean up all the .exe and .o file.
+	make debug:	No need to use this.
+
+How to execute?
+
+	type the following command to see the help message of those two code:
+	./sparse -h
+	./intelMKL -h 
