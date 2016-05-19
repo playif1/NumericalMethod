@@ -1,0 +1,11 @@
+How to compile?
+
+	make solver:	Compile my own linear system solver code.
+	make all:	Do the same thing as "make solver" here.
+	make clean:	To clean up all the .exe and .o file.
+	make debug:	No need to use this.
+
+How to execute?
+
+	type the following command to see the help message of those two code:
+	./hw6_solver -h

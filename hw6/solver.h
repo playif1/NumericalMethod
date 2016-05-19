@@ -33,7 +33,7 @@ class solver {
         }
 
         double sigma_mul(int, int, int, matrix&, vector<double>&);
-        double vec_norm(vector<double>&);
+        double vec_dot(vector<double>&, vector<double>&);
         double calculate_error();
         void diag_scaling();
         void print_x();

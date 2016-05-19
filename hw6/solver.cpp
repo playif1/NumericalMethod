@@ -61,27 +61,29 @@ void solver::conjugate_gradient(bool diag = false) {
     }
     set_x(0.0);
     int iter = 0;
-    int k = 0;
     vector<double> r(_b);
     vector<double> p(r.size(), 0.0);
     vector<double> w(r.size(), 0.0);
-    double prev_rho = vec_norm(r);
-    double rho = prev_rho;
+    double prev_rho = vec_dot(r, r);
+    double rho = vec_dot(r, r);
     double alpha = 0.0;
     double beta = 0.0;
-    double pw = 0.0;
-    double norm_b = sqrt(vec_norm(_b));
+    double norm_b = sqrt(vec_dot(_b, _b));
     cout << "norm b = " << norm_b << endl;   
 
-    while (iter < _maxIter && sqrt(rho) > _epsilon*norm_b) {
-        ++iter;
+    for (int iter = 0; iter < _maxIter; ++iter) {
+        //sqrt(rho) > _epsilon*norm_b
         cout << "Iteration: " << iter << ", sqrt(rho) = " << sqrt(rho) << endl;
+        if (sqrt(rho) < _epsilon * norm_b) {
+            break;
+        }
 
         beta = rho/prev_rho;
         for(int i = 0; i < p.size(); ++i) {
             p[i] = r[i] + beta*p[i];
         }   
-     
+        
+        // compute w
         if(!diag) {
             for(int i = 0; i < w.size(); ++i) {
                 w[i] = sigma_mul(i, 0, p.size(), _A, p);
@@ -100,21 +102,18 @@ void solver::conjugate_gradient(bool diag = false) {
                 w[i] = sigma_mul(i, 0, acp.size(), _C, acp);
             }
         }
-        
-        pw = 0.0;
-        for(int i = 0; i < p.size(); ++i) {
-            pw += p[i]*w[i];
-        }
-        alpha = rho / pw;
-        cout << "beta = " << beta << ", r[4] = " << r[4] << ", pw = " << pw << endl;
-        cout << "alpha = " << alpha << ", p[4] = " << p[4] << ", w[4] = " << w[4] << endl;
 
+        // compute alpha, then update x and r.
+        alpha = vec_dot(r, r) / vec_dot(p, w);
         for(int i = 0; i < _x.size(); ++i) {
             _x[i] += alpha * p[i];
-            r[i] -= alpha * w[i];
         }
+        for(int i = 0; i < r.size(); ++i) {
+            r[i] = r[i] - alpha * w[i];
+        }
+
         prev_rho = rho;
-        rho = vec_norm(r);
+        rho = vec_dot(r, r);
     }
 
     if (diag) {
@@ -136,12 +135,12 @@ double solver::sigma_mul(int i, int begin, int end, matrix& mat, vector<double>&
     return result;
 } 
 
-double solver::vec_norm(vector<double>& vec) {
-    double norm = 0.0;
-    for(vector<double>::iterator it = vec.begin(); it != vec.end(); ++it) {
-        norm += pow((*it), 2);
+double solver::vec_dot(vector<double>& v1, vector<double>& v2) {
+    double dot = 0.0;
+    for(int i = 0; i < v1.size(); ++i) {
+        dot += v1[i] * v2[i];
     }
-    return norm;
+    return dot;
 }
 
 void solver::print_x() {
@@ -167,7 +166,7 @@ double solver::calculate_error() {
 }
 
 void help(char *argv[], double maxIter, double default_x, string m) {
-    cout << "Usage: " << argv[0] << "[-f {filename}] [-i {maxIter}] [-x {initial value of x}] [-m {ja | gs | cg}]" << endl;
+    cout << "Usage: " << argv[0] << "[-f {filename}] [-i {maxIter}] [-x {initial value of x}] [-m {ja | gs | cg}] [-d]" << endl;
     cout << "\tSolve the linear system Ax = b" << endl;
     cout << "\tA: matrix (given by -f argument)" << endl;
     cout << "\tx: the target vector" << endl;
@@ -178,6 +177,7 @@ void help(char *argv[], double maxIter, double default_x, string m) {
     cout << "\t-x: the initial value of x, default value = " << default_x << endl;
     cout << "\t-m: choose the method to solve, default method = " << m << endl;
     cout << "\t    supported method: ja | gs | cg for jacobi | gauss-seidel | conjugate gradient" << endl;
+    cout << "\t-d: set the diagonal scaling flag, default is false." << endl;
 }
 
 int main (int argc, char *argv[]) {
@@ -203,6 +203,9 @@ int main (int argc, char *argv[]) {
                         break;
                     case 'x':
                         default_x = atof(argv[++i]);
+                        break;
+                    case 'd':
+                        diag = true;
                         break;
                     default:
                         help(argv, maxIter, default_x, method);

@@ -3,7 +3,7 @@ CXXFLAGS := -std=c++11 -O3 -DADD_
 OUTPUT := hw6_solver
 DEBUG := -g -Wall
 
-all: 
+all: solver
 
 solver: matrix.o solver.o
 	$(CXX) $(CXXFLAGS) -o $(OUTPUT) solver.o matrix.o
